@@ -5,7 +5,7 @@ rm -rf grading-area
 
 mkdir grading-area
 
-git clone $1 student-submission
+git clone $1 student-submission &> ta-output.txt
 echo 'Finished cloning'
 
 
@@ -25,7 +25,7 @@ if ! [ -f ListExamples.java ]
 then
 	echo "Missing ListExamples.java in student submission"
 	echo "Score: 0/2"
-	exit
+	exit 1
 fi
 
 javac -cp $CPATH *.java &> compile.txt
@@ -33,7 +33,7 @@ if [ $? -ne 0 ]
 then 
 	echo "Compilation error"
 	echo "Score: 0/2"
-	exit
+	exit 1
 fi
 
 java -cp $CPATH org.junit.runner.JUnitCore TestListExamples &> results.txt
@@ -42,11 +42,11 @@ java -cp $CPATH org.junit.runner.JUnitCore TestListExamples &> results.txt
 if [ $(grep -c "OK" results.txt) -eq 1 ]
 then
 	echo "Score: 2/2"
-	exit
+	exit 
 elif [[ $(grep -c "Merge" results.txt) && $(grep -c "Filter" results.txt) -ge 1 ]] # If both Merge and Filter fail, score is 0
 then
 	echo "Score: 0/2"
-	exit
+	exit 
 else
 	echo "Score: 1/2"
 	exit
